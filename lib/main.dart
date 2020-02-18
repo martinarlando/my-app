@@ -9,6 +9,22 @@ void main() => runApp(MyApp());
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    return new MaterialApp(
+        // Start the app with the "/" named route. In this case, the app starts
+        // on the HomeScreen widget.
+        initialRoute: '/',
+        routes: {
+          // When navigating to the "/" route, build the HomeScreen widget.
+          '/': (context) => HomeScreen(),
+          // When navigating to the "/second" route, build the SecondScreen widget.
+          '/second': (context) => SecondScreen(),
+        });
+  }
+}
+
+class HomeScreen extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
     Widget titleSection = Container(
       padding: const EdgeInsets.all(32),
       child: Row(
@@ -49,9 +65,9 @@ class MyApp extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
-          _buildButtonColumn(color, Icons.call, 'CALL'),
-          _buildButtonColumn(color, Icons.near_me, 'ROUTE'),
-          _buildButtonColumn(color, Icons.share, 'SHARE'),
+          _buildButtonColumn(color, Icons.call, 'CALL', context),
+          _buildButtonColumn(color, Icons.near_me, 'ROUTE', context),
+          _buildButtonColumn(color, Icons.share, 'SHARE', context),
         ],
       ),
     );
@@ -90,12 +106,19 @@ class MyApp extends StatelessWidget {
     );
   }
 
-  Column _buildButtonColumn(Color color, IconData icon, String label) {
+  Column _buildButtonColumn(
+      Color color, IconData icon, String label, BuildContext context) {
     return Column(
       mainAxisSize: MainAxisSize.min,
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        Icon(icon, color: color),
+        IconButton(
+          icon: Icon(icon, color: color),
+          onPressed: () {
+            // Navigate to the second screen using a named route.
+            Navigator.pushNamed(context, '/second');
+          },
+        ),
         Container(
           margin: const EdgeInsets.only(top: 8),
           child: Text(
@@ -154,5 +177,24 @@ class _FavoriteWidgetState extends State<FavoriteWidget> {
         _isFavorited = true;
       }
     });
+  }
+}
+
+class SecondScreen extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text("Second Route"),
+      ),
+      body: Center(
+        child: RaisedButton(
+          onPressed: () {
+            Navigator.pop(context);
+          },
+          child: Text('Go back!'),
+        ),
+      ),
+    );
   }
 }
