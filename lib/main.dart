@@ -23,6 +23,8 @@ class MyApp extends StatelessWidget {
 }
 
 class HomeScreen extends StatelessWidget {
+  final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
+
   @override
   Widget build(BuildContext context) {
     Widget titleSection = Container(
@@ -88,6 +90,7 @@ class HomeScreen extends StatelessWidget {
     return MaterialApp(
       title: 'Flutter layout demo',
       home: Scaffold(
+        key: _scaffoldKey,
         appBar: AppBar(
           title: Text('Flutter layout demo'),
         ),
@@ -115,15 +118,7 @@ class HomeScreen extends StatelessWidget {
         IconButton(
           icon: Icon(icon, color: color),
           onPressed: () {
-            // Navigate to the second screen using a named route.
-            Navigator.pushNamed(
-              context,
-              '/second',
-              arguments: ScreenArguments(
-                label,
-                'This message is extracted in the build method.',
-              ),
-            );
+            _navigateAndDisplaySelection(label, context);
           },
         ),
         Container(
@@ -139,6 +134,28 @@ class HomeScreen extends StatelessWidget {
         ),
       ],
     );
+  }
+
+// A method that launches the SelectionScreen and awaits the
+// result from Navigator.pop.
+  _navigateAndDisplaySelection(String label, BuildContext context) async {
+    // Navigate to the second screen using a named route.
+    final result = await Navigator.pushNamed(
+      context,
+      '/second',
+      arguments: ScreenArguments(
+        label,
+        'This message is extracted in the build method.',
+      ),
+    );
+
+    debugPrint('result: ' + result);
+
+    // After the Selection Screen returns a result, hide any previous snackbars
+    // and show the new result.
+    _scaffoldKey.currentState
+      ..removeCurrentSnackBar()
+      ..showSnackBar(SnackBar(content: Text("$result")));
   }
 }
 
@@ -201,7 +218,7 @@ class SecondScreen extends StatelessWidget {
       body: Center(
         child: RaisedButton(
           onPressed: () {
-            Navigator.pop(context);
+            Navigator.pop(context, args.title);
           },
           child: Text('Go back: ' + args.message),
         ),
