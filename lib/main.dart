@@ -116,7 +116,14 @@ class HomeScreen extends StatelessWidget {
           icon: Icon(icon, color: color),
           onPressed: () {
             // Navigate to the second screen using a named route.
-            Navigator.pushNamed(context, '/second');
+            Navigator.pushNamed(
+              context,
+              '/second',
+              arguments: ScreenArguments(
+                label,
+                'This message is extracted in the build method.',
+              ),
+            );
           },
         ),
         Container(
@@ -183,18 +190,32 @@ class _FavoriteWidgetState extends State<FavoriteWidget> {
 class SecondScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    // Extract the arguments from the current ModalRoute settings and cast
+    // them as ScreenArguments.
+    final ScreenArguments args = ModalRoute.of(context).settings.arguments;
+
     return Scaffold(
       appBar: AppBar(
-        title: Text("Second Route"),
+        title: Text(args.title),
       ),
       body: Center(
         child: RaisedButton(
           onPressed: () {
             Navigator.pop(context);
           },
-          child: Text('Go back!'),
+          child: Text('Go back: ' + args.message),
         ),
       ),
     );
   }
+}
+
+// You can pass any object to the arguments parameter.
+// In this example, create a class that contains a customizable
+// title and message.
+class ScreenArguments {
+  final String title;
+  final String message;
+
+  ScreenArguments(this.title, this.message);
 }
